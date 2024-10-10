@@ -21,5 +21,13 @@ async def read_temperatures(
         db: AsyncSession = Depends(get_db),
         city_id: int | None = None
 ) -> list[schemas.Temperature]:
+    # Fetch temperatures from the database, with optional city_id filtering
     temperatures = await crud.get_all_temperatures(db=db, city_id=city_id)
+
+    # If no temperatures are found for the given city_id, raise a 404 error
+    if city_id is not None and not temperatures:
+        raise HTTPException(
+            status_code=404,
+            detail="No temperatures found for the given city ID"
+        )
     return temperatures
