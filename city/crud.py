@@ -19,11 +19,25 @@ async def create_city(
 
     # Execute the query
     result = await db.execute(query)
-    await db.commit()  # Commit the transaction to save changes in the database
 
-    # Prepare the response, including the new city ID
-    response = {**city.model_dump(), "id": result.lastrowid}
-    return response
+    # Commit the transaction to save changes in the database
+    await db.commit()
+
+    # Get the ID of the newly inserted city
+    new_city_id = result.inserted_primary_key[0]
+
+    # Prepare the response by retrieving the created city instance
+    created_city_query = select(models.City).where(
+        models.City.id == new_city_id)
+    created_city_result = await db.execute(created_city_query)
+    created_city = created_city_result.scalars().first()
+
+    if created_city is None:
+        raise HTTPException(status_code=500,
+                            detail="City was not created correctly")
+
+    # Return the created City object as a Pydantic model
+    return schemas.City.from_orm(created_city)
 
 
 async def get_city_by_id(db: AsyncSession, city_id: int) -> models.City | None:
