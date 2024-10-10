@@ -45,3 +45,17 @@ async def create_temperature(
 
     # Return the created Temperature object as a Pydantic model
     return schemas.Temperature.from_orm(created_temperature)
+
+
+async def get_all_temperatures(db: AsyncSession) -> list[schemas.Temperature]:
+    # Create a select query to retrieve all records from the Temperature model
+    query = select(models.Temperature)
+
+    # Execute the query asynchronously
+    result = await db.execute(query)
+
+    # Extract all the Temperature instances from the result set
+    temperatures_list = result.scalars().all()
+
+    # Return the list of Temperature objects as Pydantic models
+    return [schemas.Temperature.from_orm(temp) for temp in temperatures_list]
