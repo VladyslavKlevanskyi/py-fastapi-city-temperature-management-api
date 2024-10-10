@@ -18,7 +18,8 @@ async def create_temperature(
 
 @router.get("/temperatures/", response_model=list[schemas.Temperature])
 async def read_temperatures(
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        city_id: int | None = None
 ) -> list[schemas.Temperature]:
-    temperatures = await crud.get_all_temperatures(db=db)
+    temperatures = await crud.get_all_temperatures(db=db, city_id=city_id)
     return temperatures

@@ -47,9 +47,16 @@ async def create_temperature(
     return schemas.Temperature.from_orm(created_temperature)
 
 
-async def get_all_temperatures(db: AsyncSession) -> list[schemas.Temperature]:
+async def get_all_temperatures(
+        db: AsyncSession,
+        city_id: int | None = None
+) -> list[schemas.Temperature]:
     # Create a select query to retrieve all records from the Temperature model
     query = select(models.Temperature)
+
+    # If city_id is provided, add a filter to the query
+    if city_id is not None:
+        query = query.where(models.Temperature.city_id == city_id)
 
     # Execute the query asynchronously
     result = await db.execute(query)
