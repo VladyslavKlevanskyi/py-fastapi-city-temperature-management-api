@@ -106,8 +106,8 @@ async def get_all_cities(db: AsyncSession) -> list[models.City]:
     # Execute the query asynchronously
     result = await db.execute(query)
 
-    # Extract all the City instances from the result set using 'scalars()',
-    # which retrieves individual model instances instead of tuples
+    # Extract all the Temperature instances from the result set
     cities_list = result.scalars().all()
 
-    return cities_list
+    # Return the list of Temperature objects as Pydantic models
+    return [schemas.City.from_orm(city) for city in cities_list]
