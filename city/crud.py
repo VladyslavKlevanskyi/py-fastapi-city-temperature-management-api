@@ -67,7 +67,7 @@ async def update_city(
     )
 
     # Execute the query asynchronously
-    result = await db.execute(query)
+    await db.execute(query)
 
     # Commit the transaction to save changes in the database
     await db.commit()
